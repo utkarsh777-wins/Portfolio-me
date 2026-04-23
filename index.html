@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Utkarsh Kumar</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23F6F1E7'/%3E%3Crect width='32' height='32' rx='6' fill='none' stroke='%23DDD0B5' stroke-width='1'/%3E%3Ctext x='5' y='26' font-family='Georgia,serif' font-style='italic' font-size='26' fill='none' stroke='%239A7028' stroke-width='1.2'%3EU%3C/text%3E%3Ctext x='11' y='24' font-family='Arial,sans-serif' font-size='13' font-weight='300' fill='%23221C13' opacity='0.35'%3Ex%3C/text%3E%3Ctext x='18' y='24' font-family='Arial,sans-serif' font-size='13' font-weight='400' fill='%23C49A3A'%3Ep%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #F6F1E7;
+      --ink: #221C13;
+      --ink-light: #7D7060;
+      --accent: #9A7028;
+      --accent-pale: #F4EAD0;
+      --border: #DDD0B5;
+      --gold: #9A7028;
+      --serif: 'Instrument Serif', Georgia, serif;
+      --sans: 'DM Sans', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--sans);
+      font-weight: 300;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* NEURAL CANVAS — fixed behind everything */
+    #neural-canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    nav, section, footer { position: relative; z-index: 1; }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.4rem 4rem;
+      background: rgba(245,242,237,0.82);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.3s;
+    }
+    nav.scrolled { border-color: var(--border); }
+
+    /* UXP MONOGRAM */
+    .nav-logo {
+      display: inline-flex;
+      align-items: center;
+      text-decoration: none;
+      line-height: 1;
+    }
+    .logo-mark {
+      position: relative;
+      display: inline-block;
+      width: 2rem;
+      height: 1.85rem;
+    }
+    /* U — stroke-only italic serif, forms the outer shell */
+    .lm-u {
+      position: absolute;
+      top: 0; left: 0;
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 1.75rem;
+      line-height: 1;
+      color: transparent;
+      -webkit-text-stroke: 1.3px var(--accent);
+      letter-spacing: -0.06em;
+      pointer-events: none;
+    }
+    /* x — low opacity dark, sits inside the U's bowl */
+    .lm-x {
+      position: absolute;
+      top: 0.28rem; left: 0.38rem;
+      font-family: var(--sans);
+      font-size: 0.85rem;
+      font-weight: 300;
+      line-height: 1;
+      color: var(--ink);
+      opacity: 0.35;
+      pointer-events: none;
+    }
+    /* p — deeper gold, layered over, descender bleeds slightly below U */
+    .lm-p {
+      position: absolute;
+      top: 0.14rem; left: 0.78rem;
+      font-family: var(--sans);
+      font-size: 0.85rem;
+      font-weight: 400;
+      line-height: 1;
+      color: #C49A3A;
+      opacity: 0.92;
+      pointer-events: none;
+    }
+
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links a {
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--accent); }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 0 4rem 5rem;
+      position: relative;
+    }
+    .hero-label {
+      font-size: 0.75rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.2rem;
+      opacity: 0;
+      animation: fadeUp 0.8s ease 0.2s forwards;
+    }
+    .hero h1 {
+      font-family: var(--serif);
+      font-size: clamp(3rem, 7vw, 6.5rem);
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      font-weight: 400;
+      max-width: 14ch;
+      opacity: 0;
+      animation: fadeUp 0.8s ease 0.4s forwards;
+    }
+    .hero h1 em { font-style: italic; color: var(--accent); }
+    .hero-tagline {
+      margin-top: 2rem;
+      font-size: 1rem;
+      color: var(--ink-light);
+      max-width: 42ch;
+      opacity: 0;
+      animation: fadeUp 0.8s ease 0.6s forwards;
+    }
+    .hero-cta {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2.5rem;
+      opacity: 0;
+      animation: fadeUp 0.8s ease 0.8s forwards;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.8rem;
+      border-radius: 100px;
+      font-size: 0.82rem;
+      letter-spacing: 0.04em;
+      text-decoration: none;
+      font-family: var(--sans);
+      font-weight: 400;
+      transition: all 0.25s;
+      cursor: pointer;
+    }
+    .btn-primary { background: var(--ink); color: var(--bg); }
+    .btn-primary:hover { background: var(--accent); transform: translateY(-2px); }
+    .btn-ghost { border: 1px solid var(--border); color: var(--ink); background: rgba(245,242,237,0.6); }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+    .hero-scroll {
+      position: absolute;
+      bottom: 2rem; right: 4rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      opacity: 0;
+      animation: fadeUp 1s ease 1.2s forwards;
+    }
+    .scroll-line {
+      width: 40px; height: 1px;
+      background: var(--border);
+      position: relative; overflow: hidden;
+    }
+    .scroll-line::after {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 100%; height: 100%;
+      background: var(--accent);
+      animation: slide 2s ease-in-out infinite 1.5s;
+    }
+    @keyframes slide { 0% { left: -100%; } 100% { left: 100%; } }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* SECTIONS */
+    section { padding: 7rem 4rem; }
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      margin-bottom: 4rem;
+    }
+    .section-num { font-size: 0.7rem; letter-spacing: 0.15em; color: var(--accent); text-transform: uppercase; }
+    .section-line { flex: 1; height: 1px; background: var(--border); max-width: 60px; }
+    .section-title { font-family: var(--serif); font-size: clamp(2rem, 4vw, 3rem); font-weight: 400; letter-spacing: -0.01em; }
+
+    /* ABOUT */
+    .about-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 6rem; align-items: start; }
+    .about-text p { font-size: 1.05rem; color: var(--ink); margin-bottom: 1.2rem; }
+    .about-text p span { color: var(--accent); font-style: italic; font-family: var(--serif); font-size: 1.15rem; }
+    .about-stat { border-top: 1px solid var(--border); padding: 1.5rem 0; }
+    .about-stat:last-child { border-bottom: 1px solid var(--border); }
+    .about-stat-label { font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-light); margin-bottom: 0.3rem; }
+    .about-stat-value { font-family: var(--serif); font-size: 1.2rem; }
+
+    /* SKILLS */
+    .skills-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1px; border: 1px solid var(--border); }
+    .skill-item {
+      padding: 1.8rem;
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: rgba(245,242,237,0.72);
+      transition: background 0.25s;
+    }
+    .skill-item:hover { background: var(--accent-pale); }
+    .skill-item:hover .skill-dot { background: var(--accent); transform: scale(1.4); }
+    .skill-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border); margin-bottom: 0.8rem; transition: all 0.25s; }
+    .skill-name { font-size: 0.9rem; font-weight: 400; }
+    .skill-tag { font-size: 0.65rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-light); margin-top: 0.2rem; }
+
+    /* PROJECTS */
+    .project-card {
+      border: 1px solid var(--border);
+      padding: 3rem;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 2rem;
+      align-items: start;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.25s;
+      background: rgba(245,242,237,0.76);
+    }
+    .project-card::before {
+      content: ''; position: absolute; inset: 0;
+      background: var(--accent-pale);
+      transform: scaleX(0); transform-origin: left;
+      transition: transform 0.4s ease; z-index: 0;
+    }
+    .project-card:hover { border-color: var(--accent); }
+    .project-card:hover::before { transform: scaleX(1); }
+    .project-card > * { position: relative; z-index: 1; }
+    .project-badge {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      background: var(--accent-pale); border: 1px solid var(--accent);
+      color: var(--accent); font-size: 0.65rem; letter-spacing: 0.1em;
+      text-transform: uppercase; padding: 0.3rem 0.8rem;
+      border-radius: 100px; margin-bottom: 1.2rem;
+    }
+    .project-badge::before {
+      content: ''; width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent); animation: pulse 1.5s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+    .project-name { font-family: var(--serif); font-size: 2rem; font-weight: 400; letter-spacing: -0.01em; margin-bottom: 1rem; }
+    .project-desc { font-size: 0.92rem; color: var(--ink-light); max-width: 55ch; line-height: 1.75; }
+    .project-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.5rem; }
+    .project-tag { font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; border: 1px solid var(--border); padding: 0.3rem 0.75rem; border-radius: 4px; color: var(--ink-light); }
+    .project-link {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      font-size: 0.8rem; color: var(--accent); text-decoration: none;
+      border: 1px solid var(--accent); padding: 0.6rem 1.2rem;
+      border-radius: 100px; transition: all 0.2s; white-space: nowrap;
+    }
+    .project-link:hover { background: var(--accent); color: white; }
+    .project-link svg { width: 14px; height: 14px; }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 3rem 4rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .footer-links { display: flex; gap: 1.5rem; }
+    .footer-links a { font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-light); text-decoration: none; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--accent); }
+    .footer-copy { font-size: 0.75rem; color: var(--ink-light); }
+
+    /* REVEAL */
+    .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 768px) {
+      nav { padding: 1.2rem 1.5rem; }
+      .nav-links { gap: 1.5rem; }
+      .hero { padding: 0 1.5rem 4rem; }
+      section { padding: 5rem 1.5rem; }
+      .about-inner { grid-template-columns: 1fr; gap: 3rem; }
+      .project-card { grid-template-columns: 1fr; padding: 2rem; }
+      footer { flex-direction: column; gap: 1.5rem; text-align: center; padding: 2.5rem 1.5rem; }
+      .hero-scroll { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="neural-canvas"></canvas>
+
+  <nav id="navbar">
+    <a href="#" class="nav-logo">
+      <span class="logo-mark">
+        <span class="lm-u">U</span>
+        <span class="lm-x">x</span>
+        <span class="lm-p">p</span>
+      </span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#projects">Projects</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero" id="home">
+    <div class="hero-label">AI / ML Engineer</div>
+    <h1>Engineering that'll <em>actually</em> matter.</h1>
+    <p class="hero-tagline">Thriving on curiosity. Building systems that solve real-world problems — one learning at a time.</p>
+    <div class="hero-cta">
+      <a href="#projects" class="btn btn-primary">See my work</a>
+      <a href="https://github.com/utkarsh777-wins" target="_blank" class="btn btn-ghost">GitHub ↗</a>
+    </div>
+    <div class="hero-scroll">
+      <div class="scroll-line"></div>
+      Scroll
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="section-header reveal">
+      <span class="section-num">01</span>
+      <div class="section-line"></div>
+      <h2 class="section-title">About Me</h2>
+    </div>
+    <div class="about-inner">
+      <div class="about-text reveal">
+        <p>I'm <span>Utkarsh Kumar</span> — an AI/ML enthusiast driven not by deadlines or degrees, but by an insatiable curiosity about how the world works and how software can reshape it.</p>
+        <p>Right now I'm deep in the learning phase — picking up tools, breaking things, understanding why they break, and building again. That's the process, and I'm fully committed to it.</p>
+        <p>The goal? Build intelligent systems that don't just work — but actually solve problems that matter to real people.</p>
+      </div>
+      <div class="about-aside reveal">
+        <div class="about-stat">
+          <div class="about-stat-label">Focus Area</div>
+          <div class="about-stat-value">AI / Machine Learning</div>
+        </div>
+        <div class="about-stat">
+          <div class="about-stat-label">Current Mode</div>
+          <div class="about-stat-value">Building &amp; Learning</div>
+        </div>
+        <div class="about-stat">
+          <div class="about-stat-label">GitHub</div>
+          <div class="about-stat-value">
+            <a href="https://github.com/utkarsh777-wins" target="_blank" style="color:var(--accent);text-decoration:none;">utkarsh777-wins ↗</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SKILLS -->
+  <section id="skills" style="padding-top: 0;">
+    <div class="section-header reveal">
+      <span class="section-num">02</span>
+      <div class="section-line"></div>
+      <h2 class="section-title">Skills</h2>
+    </div>
+    <div class="skills-grid reveal">
+      <div class="skill-item"><div class="skill-dot"></div><div class="skill-name">Python</div><div class="skill-tag">Primary</div></div>
+      <div class="skill-item"><div class="skill-dot"></div><div class="skill-name">JavaScript</div><div class="skill-tag">Web</div></div>
+      <div class="skill-item"><div class="skill-dot"></div><div class="skill-name">React</div><div class="skill-tag">Frontend</div></div>
+      <div class="skill-item"><div class="skill-dot"></div><div class="skill-name">HTML &amp; CSS</div><div class="skill-tag">Web</div></div>
+      <div class="skill-item"><div class="skill-dot"></div><div class="skill-name">Java</div><div class="skill-tag">OOP</div></div>
+      <div class="skill-item"><div class="skill-dot"></div><div class="skill-name">C Language</div><div class="skill-tag">Systems</div></div>
+      <div class="skill-item"><div class="skill-dot"></div><div class="skill-name">PostgreSQL</div><div class="skill-tag">Database</div></div>
+      <div class="skill-item"><div class="skill-dot"></div><div class="skill-name">MongoDB</div><div class="skill-tag">Database</div></div>
+      <div class="skill-item"><div class="skill-dot"></div><div class="skill-name">SQL / DBMS</div><div class="skill-tag">Data</div></div>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section id="projects" style="padding-top: 0;">
+    <div class="section-header reveal">
+      <span class="section-num">03</span>
+      <div class="section-line"></div>
+      <h2 class="section-title">Projects</h2>
+    </div>
+    <div class="project-card reveal">
+      <div>
+        <div class="project-badge">In Progress</div>
+        <div class="project-name">deskBuddy</div>
+        <p class="project-desc">A finite state machine with hardware as the edge node. deskBuddy monitors your posture, acts as a clock, and adapts its facial expressions based on sensor input. Most importantly — just call its name or bring your hand within 5 cm, and it starts listening, takes your input, and answers your doubt. No tab switching. No extra noise. Just intelligent, ambient assistance right at your desk.</p>
+        <div class="project-tags">
+          <span class="project-tag">FSM</span>
+          <span class="project-tag">Hardware</span>
+          <span class="project-tag">Sensors</span>
+          <span class="project-tag">AI</span>
+          <span class="project-tag">Python</span>
+        </div>
+      </div>
+      <div>
+        <a href="https://github.com/utkarsh777-wins/deskBuddy-v1" target="_blank" class="project-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+          </svg>
+          View on GitHub
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <a href="#" class="nav-logo">
+      <span class="logo-mark">
+        <span class="lm-u">U</span>
+        <span class="lm-x">x</span>
+        <span class="lm-p">p</span>
+      </span>
+    </a>
+    <div class="footer-links">
+      <a href="#about">About</a>
+      <a href="#skills">Skills</a>
+      <a href="#projects">Projects</a>
+      <a href="https://github.com/utkarsh777-wins" target="_blank">GitHub ↗</a>
+    </div>
+    <div class="footer-copy">© 2026 Utkarsh Kumar</div>
+  </footer>
+
+  <script>
+    /* ── NEURAL NETWORK CANVAS ───────────────────────────── */
+    const canvas = document.getElementById('neural-canvas');
+    const ctx    = canvas.getContext('2d');
+    let W, H, nodes = [];
+    const CONNECT_DIST = 145;
+
+    /*
+      Five section clusters alternating left / right.
+      yFrac: which "screen-height" band this cluster lives in (0 = top, 1 = second vh, etc.)
+      side:  which half of the viewport nodes spawn in
+      count: number of nodes
+    */
+    const CLUSTERS = [
+      { side: 'left',  yFrac: 0,   count: 22 }, // hero
+      { side: 'right', yFrac: 1,   count: 18 }, // about
+      { side: 'left',  yFrac: 2,   count: 18 }, // skills
+      { side: 'right', yFrac: 3,   count: 20 }, // projects
+      { side: 'left',  yFrac: 3.8, count: 10 }, // footer tail
+    ];
+
+    function buildNodes() {
+      nodes = [];
+      CLUSTERS.forEach(cl => {
+        for (let i = 0; i < cl.count; i++) {
+          // x fraction: left cluster 0–0.52, right 0.48–1.0 (slight overlap for centre connections)
+          const xFrac = cl.side === 'left'
+            ? Math.random() * 0.52
+            : 0.48 + Math.random() * 0.52;
+
+          // y in page-space: centred in the section band ± spread
+          const bandCenter = (cl.yFrac + 0.5) * H;
+          const spread     = H * 0.52;
+          const yPage      = bandCenter + (Math.random() - 0.5) * spread;
+
+          nodes.push({
+            xFrac,
+            yPage,
+            phase:      Math.random() * Math.PI * 2,
+            speed:      0.0022 + Math.random() * 0.0028,
+            rx:         16 + Math.random() * 26,   // horizontal drift radius
+            ry:         10 + Math.random() * 18,   // vertical drift radius
+            nodeRadius: 0.8 + Math.random() * 1.5,
+          });
+        }
+      });
+    }
+
+    function resize() {
+      W = canvas.width  = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+      buildNodes();
+    }
+
+    let tick = 0;
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      const scrollY = window.scrollY;
+      tick++;
+
+      // Map nodes to current screen space
+      const pts = [];
+      for (const n of nodes) {
+        const sx = n.xFrac * W + Math.cos(n.phase + tick * n.speed) * n.rx;
+        const sy = n.yPage - scrollY + Math.sin(n.phase + tick * n.speed * 0.6) * n.ry;
+        // Only keep nodes visible on screen (with small buffer)
+        if (sy > -80 && sy < H + 80) {
+          pts.push({ sx, sy, r: n.nodeRadius });
+        }
+      }
+
+      // Draw edges
+      for (let i = 0; i < pts.length; i++) {
+        for (let j = i + 1; j < pts.length; j++) {
+          const dx = pts[i].sx - pts[j].sx;
+          const dy = pts[i].sy - pts[j].sy;
+          const d  = Math.sqrt(dx * dx + dy * dy);
+          if (d < CONNECT_DIST) {
+            // Fade out edges near viewport edges for a natural bloom effect
+            const edgeFade = Math.min(
+              1,
+              Math.min(pts[i].sy, pts[j].sy) / 60,           // top fade
+              (H - Math.max(pts[i].sy, pts[j].sy)) / 60      // bottom fade
+            );
+            const alpha = (1 - d / CONNECT_DIST) * 0.16 * Math.max(0, edgeFade);
+            ctx.beginPath();
+            ctx.strokeStyle = `rgba(154,112,40,${alpha.toFixed(3)})`;
+            ctx.lineWidth   = 0.75;
+            ctx.moveTo(pts[i].sx, pts[i].sy);
+            ctx.lineTo(pts[j].sx, pts[j].sy);
+            ctx.stroke();
+          }
+        }
+      }
+
+      // Draw nodes
+      for (const p of pts) {
+        const fade = Math.min(1, p.sy / 40, (H - p.sy) / 40);
+        ctx.beginPath();
+        ctx.arc(p.sx, p.sy, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(154,112,40,${(0.36 * Math.max(0, fade)).toFixed(3)})`;
+        ctx.fill();
+      }
+
+      requestAnimationFrame(draw);
+    }
+
+    window.addEventListener('resize', resize);
+    resize();
+    draw();
+
+    /* ── NAV SCROLL ─────────────────────────────────────── */
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 20);
+    });
+
+    /* ── SCROLL REVEAL ──────────────────────────────────── */
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((e, i) => {
+        if (e.isIntersecting) {
+          setTimeout(() => e.target.classList.add('visible'), i * 80);
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>
