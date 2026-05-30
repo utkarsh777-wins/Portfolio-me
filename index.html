@@ -18,7 +18,6 @@
       --accent: #9A7028;
       --accent-pale: #F4EAD0;
       --border: #DDD0B5;
-      --gold: #9A7028;
       --serif: 'Instrument Serif', Georgia, serif;
       --sans: 'DM Sans', sans-serif;
     }
@@ -34,7 +33,6 @@
       overflow-x: hidden;
     }
 
-    /* NEURAL CANVAS — fixed behind everything */
     #neural-canvas {
       position: fixed;
       top: 0; left: 0;
@@ -45,7 +43,7 @@
 
     nav, section, footer { position: relative; z-index: 1; }
 
-    /* NAV */
+    /* ── NAV ─────────────────────────────────────────────── */
     nav {
       position: fixed;
       top: 0; left: 0; right: 0;
@@ -54,19 +52,22 @@
       justify-content: space-between;
       align-items: center;
       padding: 1.4rem 4rem;
-      background: rgba(245,242,237,0.82);
+      background: rgba(246,241,231,0.84);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid transparent;
       transition: border-color 0.3s;
     }
     nav.scrolled { border-color: var(--border); }
 
-    /* UXP MONOGRAM */
+    /* ── UXP MONOGRAM ────────────────────────────────────── */
     .nav-logo {
       display: inline-flex;
       align-items: center;
-      text-decoration: none;
       line-height: 1;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
     }
     .logo-mark {
       position: relative;
@@ -74,7 +75,6 @@
       width: 2rem;
       height: 1.85rem;
     }
-    /* U — stroke-only italic serif, forms the outer shell */
     .lm-u {
       position: absolute;
       top: 0; left: 0;
@@ -87,7 +87,6 @@
       letter-spacing: -0.06em;
       pointer-events: none;
     }
-    /* x — low opacity dark, sits inside the U's bowl */
     .lm-x {
       position: absolute;
       top: 0.28rem; left: 0.38rem;
@@ -99,7 +98,6 @@
       opacity: 0.35;
       pointer-events: none;
     }
-    /* p — deeper gold, layered over, descender bleeds slightly below U */
     .lm-p {
       position: absolute;
       top: 0.14rem; left: 0.78rem;
@@ -112,37 +110,61 @@
       pointer-events: none;
     }
 
-    /* LOGO DROPDOWN — appears on click */
-    .logo-wrapper {
+    /* Contact nav dropdown */
+    .contact-nav-wrapper {
       position: relative;
       display: inline-flex;
       align-items: center;
     }
-    .logo-dropdown {
+    .contact-nav-btn {
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      font-family: var(--sans);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      transition: color 0.2s;
+    }
+    .contact-nav-btn:hover { color: var(--accent); }
+    .contact-nav-btn .chevron {
+      font-size: 0.6rem;
+      transition: transform 0.2s;
+      display: inline-block;
+    }
+    .contact-nav-btn[aria-expanded="true"] { color: var(--accent); }
+    .contact-nav-btn[aria-expanded="true"] .chevron { transform: rotate(180deg); }
+
+    .contact-dropdown {
       position: absolute;
       top: calc(100% + 14px);
-      left: 0;
+      right: 0;
       background: var(--bg);
       border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 0.5rem;
-      min-width: 210px;
-      box-shadow: 0 8px 32px rgba(34,28,19,0.10);
+      border-radius: 12px;
+      padding: 0.45rem;
+      min-width: 220px;
+      box-shadow: 0 12px 40px rgba(34,28,19,0.11);
       opacity: 0;
-      transform: translateY(-6px);
+      transform: translateY(-8px);
       pointer-events: none;
       transition: opacity 0.2s ease, transform 0.2s ease;
       z-index: 200;
     }
-    .logo-dropdown.open {
+    .contact-dropdown.open {
       opacity: 1;
       transform: translateY(0);
       pointer-events: all;
     }
-    .logo-dropdown::before {
+    .contact-dropdown::before {
       content: '';
       position: absolute;
-      top: -5px; left: 14px;
+      top: -5px; right: 16px;
       width: 9px; height: 9px;
       background: var(--bg);
       border-left: 1px solid var(--border);
@@ -150,30 +172,42 @@
       transform: rotate(45deg);
     }
     .dropdown-label {
-      font-size: 0.65rem;
-      letter-spacing: 0.1em;
+      font-size: 0.62rem;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
       color: var(--ink-light);
-      padding: 0.4rem 0.75rem 0.5rem;
+      padding: 0.5rem 0.8rem 0.4rem;
+    }
+    .dropdown-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 0.3rem 0.4rem;
     }
     .dropdown-link {
       display: flex;
       align-items: center;
-      gap: 0.65rem;
-      padding: 0.6rem 0.75rem;
-      border-radius: 6px;
+      gap: 0.7rem;
+      padding: 0.65rem 0.8rem;
+      border-radius: 8px;
       text-decoration: none;
       color: var(--ink);
-      font-size: 0.82rem;
+      font-size: 0.83rem;
       font-weight: 400;
       transition: background 0.15s, color 0.15s;
     }
     .dropdown-link:hover { background: var(--accent-pale); color: var(--accent); }
-    .dropdown-link svg { width: 15px; height: 15px; flex-shrink: 0; opacity: 0.7; }
+    .dropdown-link svg { width: 15px; height: 15px; flex-shrink: 0; opacity: 0.65; }
+    .dropdown-link:hover svg { opacity: 1; }
+    .dropdown-link-sub {
+      font-size: 0.7rem;
+      color: var(--ink-light);
+      margin-left: auto;
+      white-space: nowrap;
+    }
 
     .nav-links { display: flex; gap: 2.5rem; list-style: none; }
     .nav-links a {
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       letter-spacing: 0.08em;
       text-transform: uppercase;
       color: var(--ink-light);
@@ -182,7 +216,7 @@
     }
     .nav-links a:hover { color: var(--accent); }
 
-    /* HERO */
+    /* ── HERO ────────────────────────────────────────────── */
     .hero {
       min-height: 100vh;
       display: flex;
@@ -238,11 +272,10 @@
       font-family: var(--sans);
       font-weight: 400;
       transition: all 0.25s;
-      cursor: pointer;
     }
     .btn-primary { background: var(--ink); color: var(--bg); }
     .btn-primary:hover { background: var(--accent); transform: translateY(-2px); }
-    .btn-ghost { border: 1px solid var(--border); color: var(--ink); background: rgba(245,242,237,0.6); }
+    .btn-ghost { border: 1px solid var(--border); color: var(--ink); background: rgba(246,241,231,0.6); }
     .btn-ghost:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
     .hero-scroll {
       position: absolute;
@@ -257,17 +290,10 @@
       opacity: 0;
       animation: fadeUp 1s ease 1.2s forwards;
     }
-    .scroll-line {
-      width: 40px; height: 1px;
-      background: var(--border);
-      position: relative; overflow: hidden;
-    }
+    .scroll-line { width: 40px; height: 1px; background: var(--border); position: relative; overflow: hidden; }
     .scroll-line::after {
-      content: '';
-      position: absolute;
-      top: 0; left: -100%;
-      width: 100%; height: 100%;
-      background: var(--accent);
+      content: ''; position: absolute; top: 0; left: -100%;
+      width: 100%; height: 100%; background: var(--accent);
       animation: slide 2s ease-in-out infinite 1.5s;
     }
     @keyframes slide { 0% { left: -100%; } 100% { left: 100%; } }
@@ -276,19 +302,14 @@
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* SECTIONS */
+    /* ── SHARED SECTION STYLES ──────────────────────────── */
     section { padding: 7rem 4rem; }
-    .section-header {
-      display: flex;
-      align-items: center;
-      gap: 1.5rem;
-      margin-bottom: 4rem;
-    }
+    .section-header { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 4rem; }
     .section-num { font-size: 0.7rem; letter-spacing: 0.15em; color: var(--accent); text-transform: uppercase; }
     .section-line { flex: 1; height: 1px; background: var(--border); max-width: 60px; }
     .section-title { font-family: var(--serif); font-size: clamp(2rem, 4vw, 3rem); font-weight: 400; letter-spacing: -0.01em; }
 
-    /* ABOUT */
+    /* ── ABOUT ───────────────────────────────────────────── */
     .about-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 6rem; align-items: start; }
     .about-text p { font-size: 1.05rem; color: var(--ink); margin-bottom: 1.2rem; }
     .about-text p span { color: var(--accent); font-style: italic; font-family: var(--serif); font-size: 1.15rem; }
@@ -297,13 +318,13 @@
     .about-stat-label { font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-light); margin-bottom: 0.3rem; }
     .about-stat-value { font-family: var(--serif); font-size: 1.2rem; }
 
-    /* SKILLS */
+    /* ── SKILLS ──────────────────────────────────────────── */
     .skills-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1px; border: 1px solid var(--border); }
     .skill-item {
       padding: 1.8rem;
       border-right: 1px solid var(--border);
       border-bottom: 1px solid var(--border);
-      background: rgba(245,242,237,0.72);
+      background: rgba(246,241,231,0.72);
       transition: background 0.25s;
     }
     .skill-item:hover { background: var(--accent-pale); }
@@ -312,7 +333,7 @@
     .skill-name { font-size: 0.9rem; font-weight: 400; }
     .skill-tag { font-size: 0.65rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-light); margin-top: 0.2rem; }
 
-    /* PROJECTS */
+    /* ── PROJECTS ────────────────────────────────────────── */
     .project-card {
       border: 1px solid var(--border);
       padding: 3rem;
@@ -323,7 +344,7 @@
       position: relative;
       overflow: hidden;
       transition: border-color 0.25s;
-      background: rgba(245,242,237,0.76);
+      background: rgba(246,241,231,0.76);
     }
     .project-card::before {
       content: ''; position: absolute; inset: 0;
@@ -359,31 +380,153 @@
     .project-link:hover { background: var(--accent); color: white; }
     .project-link svg { width: 14px; height: 14px; }
 
-    /* FOOTER */
+    /* ── LET'S CONNECT SECTION ───────────────────────────── */
+    .contact-section {
+      border-top: 1px solid var(--border);
+      padding: 8rem 4rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6rem;
+      align-items: center;
+    }
+    .contact-left {}
+    .contact-eyebrow {
+      font-size: 0.68rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.4rem;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+    .contact-eyebrow::before {
+      content: '';
+      display: inline-block;
+      width: 28px; height: 1px;
+      background: var(--accent);
+    }
+    .contact-heading {
+      font-family: var(--serif);
+      font-size: clamp(2.4rem, 4.5vw, 4rem);
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      line-height: 1.08;
+      margin-bottom: 1.4rem;
+    }
+    .contact-heading em { font-style: italic; color: var(--accent); }
+    .contact-sub {
+      font-size: 0.97rem;
+      color: var(--ink-light);
+      line-height: 1.75;
+      max-width: 36ch;
+    }
+
+    /* Right side: stacked contact rows */
+    .contact-right { display: flex; flex-direction: column; gap: 1rem; }
+    .contact-item {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      padding: 1.4rem 1.6rem;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      text-decoration: none;
+      color: var(--ink);
+      background: rgba(246,241,231,0.7);
+      transition: border-color 0.22s, background 0.22s, transform 0.22s;
+      position: relative;
+      overflow: hidden;
+    }
+    .contact-item::after {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+      background: var(--accent);
+      transform: scaleY(0);
+      transform-origin: bottom;
+      transition: transform 0.25s ease;
+    }
+    .contact-item:hover {
+      border-color: var(--accent);
+      background: var(--accent-pale);
+      transform: translateX(4px);
+    }
+    .contact-item:hover::after { transform: scaleY(1); }
+    .contact-item-icon {
+      width: 36px; height: 36px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg);
+      flex-shrink: 0;
+      transition: border-color 0.22s, background 0.22s;
+    }
+    .contact-item:hover .contact-item-icon {
+      border-color: var(--accent);
+      background: var(--accent-pale);
+    }
+    .contact-item-icon svg { width: 16px; height: 16px; color: var(--accent); }
+    .contact-item-body { flex: 1; min-width: 0; }
+    .contact-item-platform {
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      margin-bottom: 0.1rem;
+    }
+    .contact-item-handle {
+      font-family: var(--serif);
+      font-size: 1rem;
+      font-style: italic;
+      color: var(--ink);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .contact-item-arrow {
+      font-size: 0.8rem;
+      color: var(--ink-light);
+      transition: color 0.2s, transform 0.2s;
+      flex-shrink: 0;
+    }
+    .contact-item:hover .contact-item-arrow {
+      color: var(--accent);
+      transform: translateX(3px);
+    }
+
+    /* ── FOOTER ──────────────────────────────────────────── */
     footer {
       border-top: 1px solid var(--border);
-      padding: 3rem 4rem;
+      padding: 2.2rem 4rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
+    .footer-logo { display: inline-flex; align-items: center; line-height: 1; cursor: default; user-select: none; }
     .footer-links { display: flex; gap: 1.5rem; }
     .footer-links a { font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-light); text-decoration: none; transition: color 0.2s; }
     .footer-links a:hover { color: var(--accent); }
     .footer-copy { font-size: 0.75rem; color: var(--ink-light); }
 
-    /* REVEAL */
+    /* ── REVEAL ──────────────────────────────────────────── */
     .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
     .reveal.visible { opacity: 1; transform: translateY(0); }
 
+    @media (max-width: 900px) {
+      .contact-section { grid-template-columns: 1fr; gap: 3rem; padding: 6rem 1.5rem; }
+    }
     @media (max-width: 768px) {
       nav { padding: 1.2rem 1.5rem; }
-      .nav-links { gap: 1.5rem; }
+      .nav-links { gap: 1.2rem; }
       .hero { padding: 0 1.5rem 4rem; }
       section { padding: 5rem 1.5rem; }
       .about-inner { grid-template-columns: 1fr; gap: 3rem; }
       .project-card { grid-template-columns: 1fr; padding: 2rem; }
-      footer { flex-direction: column; gap: 1.5rem; text-align: center; padding: 2.5rem 1.5rem; }
+      footer { flex-direction: column; gap: 1.2rem; text-align: center; padding: 2rem 1.5rem; }
       .hero-scroll { display: none; }
     }
   </style>
@@ -392,45 +535,59 @@
 
   <canvas id="neural-canvas"></canvas>
 
+  <!-- ── NAV ─────────────────────────────────────────────── -->
   <nav id="navbar">
-    <div class="logo-wrapper">
-      <a href="#" class="nav-logo" id="logo-btn" aria-haspopup="true" aria-expanded="false">
-        <span class="logo-mark">
-          <span class="lm-u">U</span>
-          <span class="lm-x">x</span>
-          <span class="lm-p">p</span>
-        </span>
-      </a>
-
-      <!-- Logo dropdown: links to socials -->
-      <div class="logo-dropdown" id="logo-dropdown" role="menu">
-        <div class="dropdown-label">Visit my socials</div>
-
-        <a class="dropdown-link" href="https://www.linkedin.com/in/utkarsh777wins" target="_blank" rel="noopener" role="menuitem">
-          <!-- LinkedIn icon -->
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M20.447 20.452H17.21v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.984V9h3.102v1.561h.046c.432-.82 1.487-1.684 3.059-1.684 3.27 0 3.873 2.151 3.873 4.948v6.627zM5.337 7.433a1.8 1.8 0 1 1 0-3.6 1.8 1.8 0 0 1 0 3.6zm1.603 13.019H3.733V9h3.207v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-          </svg>
-          LinkedIn
-        </a>
-
-        <a class="dropdown-link" href="https://github.com/utkarsh777-wins" target="_blank" rel="noopener" role="menuitem">
-          <!-- GitHub icon -->
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.929.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
-          </svg>
-          GitHub
-        </a>
-      </div>
+    <!-- Logo is visual-only, reserved for a future interaction -->
+    <div class="nav-logo" style="cursor:default;">
+      <span class="logo-mark">
+        <span class="lm-u">U</span>
+        <span class="lm-x">x</span>
+        <span class="lm-p">p</span>
+      </span>
     </div>
+
     <ul class="nav-links">
       <li><a href="#about">About</a></li>
       <li><a href="#skills">Skills</a></li>
       <li><a href="#projects">Projects</a></li>
+      <!-- Contact opens a dropdown with socials -->
+      <li class="contact-nav-wrapper">
+        <button class="contact-nav-btn" id="contact-btn" aria-haspopup="true" aria-expanded="false">
+          Contact <span class="chevron">▾</span>
+        </button>
+        <div class="contact-dropdown" id="contact-dropdown" role="menu">
+          <div class="dropdown-label">Get in touch</div>
+          <div class="dropdown-divider"></div>
+
+          <a class="dropdown-link" href="mailto:utkarsh777wins@gmail.com" role="menuitem">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+            </svg>
+            Email
+            <span class="dropdown-link-sub">utkarsh777wins</span>
+          </a>
+
+          <a class="dropdown-link" href="https://www.linkedin.com/in/utkarsh777wins" target="_blank" rel="noopener" role="menuitem">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M20.447 20.452H17.21v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.984V9h3.102v1.561h.046c.432-.82 1.487-1.684 3.059-1.684 3.27 0 3.873 2.151 3.873 4.948v6.627zM5.337 7.433a1.8 1.8 0 1 1 0-3.6 1.8 1.8 0 0 1 0 3.6zm1.603 13.019H3.733V9h3.207v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+            </svg>
+            LinkedIn
+            <span class="dropdown-link-sub">utkarsh777wins</span>
+          </a>
+
+          <a class="dropdown-link" href="https://github.com/utkarsh777-wins" target="_blank" rel="noopener" role="menuitem">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.929.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
+            </svg>
+            GitHub
+            <span class="dropdown-link-sub">utkarsh777-wins</span>
+          </a>
+        </div>
+      </li>
     </ul>
   </nav>
 
-  <!-- HERO -->
+  <!-- ── HERO ─────────────────────────────────────────────── -->
   <section class="hero" id="home">
     <div class="hero-label">AI / ML Engineer</div>
     <h1>Engineering that'll <em>actually</em> matter.</h1>
@@ -445,7 +602,7 @@
     </div>
   </section>
 
-  <!-- ABOUT -->
+  <!-- ── ABOUT ─────────────────────────────────────────────── -->
   <section id="about">
     <div class="section-header reveal">
       <span class="section-num">01</span>
@@ -477,7 +634,7 @@
     </div>
   </section>
 
-  <!-- SKILLS -->
+  <!-- ── SKILLS ─────────────────────────────────────────────── -->
   <section id="skills" style="padding-top: 0;">
     <div class="section-header reveal">
       <span class="section-num">02</span>
@@ -489,15 +646,13 @@
         ┌─────────────────────────────────────────────────────────┐
         │  SKILLS — add / remove skill cards here                 │
         │                                                         │
-        │  Copy one block below and paste it before this comment: │
-        │                                                         │
+        │  Copy one block and paste before this comment:          │
         │  <div class="skill-item">                               │
         │    <div class="skill-dot"></div>                        │
         │    <div class="skill-name">Your Skill</div>             │
         │    <div class="skill-tag">Category</div>  ← optional   │
         │  </div>                                                 │
-        │                                                         │
-        │  The grid auto-fills columns — no layout changes needed │
+        │  The grid fills columns automatically.                  │
         └─────────────────────────────────────────────────────────┘
       -->
       <div class="skill-item"><div class="skill-dot"></div><div class="skill-name">Python</div><div class="skill-tag">Primary</div></div>
@@ -513,7 +668,7 @@
     </div>
   </section>
 
-  <!-- PROJECTS -->
+  <!-- ── PROJECTS ───────────────────────────────────────────── -->
   <section id="projects" style="padding-top: 0;">
     <div class="section-header reveal">
       <span class="section-num">03</span>
@@ -523,16 +678,10 @@
     <!--
       ┌──────────────────────────────────────────────────────────────────┐
       │  PROJECTS — add new project cards here                           │
-      │                                                                  │
-      │  Copy the entire block below (from <div class="project-card">   │
-      │  to its closing </div>) and paste it after the last card.       │
-      │                                                                  │
-      │  Fields to update per project:                                   │
-      │    - project-badge: "In Progress" | "Completed" | remove it     │
-      │    - project-name: display name of the project                  │
-      │    - project-desc: 2–3 sentence description                     │
-      │    - project-tag: tech stack tags (add/remove <span> as needed) │
-      │    - href on project-link: GitHub or live demo URL              │
+      │  Copy the <div class="project-card reveal"> block and paste     │
+      │  it after the last card, before the insert comment.             │
+      │  Fields: project-badge, project-name, project-desc,             │
+      │  project-tag (×N), href on .project-link                        │
       └──────────────────────────────────────────────────────────────────┘
     -->
     <div class="project-card reveal">
@@ -559,65 +708,105 @@
     </div>
     <!-- INSERT NEW PROJECT CARDS ABOVE THIS LINE -->
   </section>
+
+  <!-- ── LET'S CONNECT ─────────────────────────────────────── -->
+  <section id="contact" class="contact-section">
+    <div class="contact-left">
+      <div class="contact-eyebrow reveal">Let's connect</div>
+      <h2 class="contact-heading reveal">Got an idea?<br><em>Let's talk.</em></h2>
+      <p class="contact-sub reveal">Open to collaborations, conversations, and anything in between. Whether it's a project, a question, or just a hello — reach out.</p>
+    </div>
+
+    <div class="contact-right reveal">
+
+      <a class="contact-item" href="mailto:utkarsh777wins@gmail.com">
+        <div class="contact-item-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+          </svg>
+        </div>
+        <div class="contact-item-body">
+          <div class="contact-item-platform">Email</div>
+          <div class="contact-item-handle">utkarsh777wins@gmail.com</div>
+        </div>
+        <span class="contact-item-arrow">↗</span>
+      </a>
+
+      <a class="contact-item" href="https://www.linkedin.com/in/utkarsh777wins" target="_blank" rel="noopener">
+        <div class="contact-item-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M20.447 20.452H17.21v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.984V9h3.102v1.561h.046c.432-.82 1.487-1.684 3.059-1.684 3.27 0 3.873 2.151 3.873 4.948v6.627zM5.337 7.433a1.8 1.8 0 1 1 0-3.6 1.8 1.8 0 0 1 0 3.6zm1.603 13.019H3.733V9h3.207v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+          </svg>
+        </div>
+        <div class="contact-item-body">
+          <div class="contact-item-platform">LinkedIn</div>
+          <div class="contact-item-handle">utkarsh777wins</div>
+        </div>
+        <span class="contact-item-arrow">↗</span>
+      </a>
+
+      <a class="contact-item" href="https://github.com/utkarsh777-wins" target="_blank" rel="noopener">
+        <div class="contact-item-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.929.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
+          </svg>
+        </div>
+        <div class="contact-item-body">
+          <div class="contact-item-platform">GitHub</div>
+          <div class="contact-item-handle">utkarsh777-wins</div>
+        </div>
+        <span class="contact-item-arrow">↗</span>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- ── FOOTER ─────────────────────────────────────────────── -->
   <footer>
-    <a href="#" class="nav-logo">
+    <div class="footer-logo">
       <span class="logo-mark">
         <span class="lm-u">U</span>
         <span class="lm-x">x</span>
         <span class="lm-p">p</span>
       </span>
-    </a>
+    </div>
     <div class="footer-links">
       <a href="#about">About</a>
       <a href="#skills">Skills</a>
       <a href="#projects">Projects</a>
-      <a href="https://github.com/utkarsh777-wins" target="_blank">GitHub ↗</a>
     </div>
     <div class="footer-copy">© 2026 Utkarsh Kumar</div>
   </footer>
 
   <script>
-    /* ── NEURAL NETWORK CANVAS ───────────────────────────── */
+    /* ── NEURAL NETWORK ─────────────────────────────────────── */
     const canvas = document.getElementById('neural-canvas');
     const ctx    = canvas.getContext('2d');
     let W, H, nodes = [];
     const CONNECT_DIST = 145;
 
-    /*
-      Five section clusters alternating left / right.
-      yFrac: which "screen-height" band this cluster lives in (0 = top, 1 = second vh, etc.)
-      side:  which half of the viewport nodes spawn in
-      count: number of nodes
-    */
     const CLUSTERS = [
-      { side: 'left',  yFrac: 0,   count: 22 }, // hero
-      { side: 'right', yFrac: 1,   count: 18 }, // about
-      { side: 'left',  yFrac: 2,   count: 18 }, // skills
-      { side: 'right', yFrac: 3,   count: 20 }, // projects
-      { side: 'left',  yFrac: 3.8, count: 10 }, // footer tail
+      { side: 'left',  yFrac: 0,   count: 22 },
+      { side: 'right', yFrac: 1,   count: 18 },
+      { side: 'left',  yFrac: 2,   count: 18 },
+      { side: 'right', yFrac: 3,   count: 20 },
+      { side: 'left',  yFrac: 4,   count: 14 },
     ];
 
     function buildNodes() {
       nodes = [];
       CLUSTERS.forEach(cl => {
         for (let i = 0; i < cl.count; i++) {
-          // x fraction: left cluster 0–0.52, right 0.48–1.0 (slight overlap for centre connections)
-          const xFrac = cl.side === 'left'
-            ? Math.random() * 0.52
-            : 0.48 + Math.random() * 0.52;
-
-          // y in page-space: centred in the section band ± spread
-          const bandCenter = (cl.yFrac + 0.5) * H;
-          const spread     = H * 0.52;
-          const yPage      = bandCenter + (Math.random() - 0.5) * spread;
-
+          const xFrac = cl.side === 'left' ? Math.random() * 0.52 : 0.48 + Math.random() * 0.52;
+          const yPage = (cl.yFrac + 0.5) * H + (Math.random() - 0.5) * H * 0.52;
           nodes.push({
-            xFrac,
-            yPage,
-            phase:      Math.random() * Math.PI * 2,
-            speed:      0.0022 + Math.random() * 0.0028,
-            rx:         16 + Math.random() * 26,   // horizontal drift radius
-            ry:         10 + Math.random() * 18,   // vertical drift radius
+            bx: xFrac * W,
+            by: yPage,
+            speedX: 0.18 + Math.random() * 0.22,
+            speedY: 0.11 + Math.random() * 0.17,
+            phase:  Math.random() * Math.PI * 2,
+            rx: 18 + Math.random() * 28,
+            ry: 12 + Math.random() * 20,
             nodeRadius: 0.8 + Math.random() * 1.5,
           });
         }
@@ -630,56 +819,45 @@
       buildNodes();
     }
 
-    let tick = 0;
     function draw() {
+      const T = performance.now() / 1000;
       ctx.clearRect(0, 0, W, H);
       const scrollY = window.scrollY;
-      tick++;
 
-      // Map nodes to current screen space
       const pts = [];
       for (const n of nodes) {
-        const sx = n.xFrac * W + Math.cos(n.phase + tick * n.speed) * n.rx;
-        const sy = n.yPage - scrollY + Math.sin(n.phase + tick * n.speed * 0.6) * n.ry;
-        // Only keep nodes visible on screen (with small buffer)
-        if (sy > -80 && sy < H + 80) {
-          pts.push({ sx, sy, r: n.nodeRadius });
-        }
+        const sx = n.bx
+                  + Math.cos(n.phase         + T * n.speedX)          * n.rx
+                  + Math.cos(n.phase * 1.618 + T * n.speedX * 0.382)  * n.rx * 0.22;
+        const sy = n.by - scrollY
+                  + Math.sin(n.phase         + T * n.speedY)          * n.ry
+                  + Math.sin(n.phase * 0.618 + T * n.speedY * 0.618)  * n.ry * 0.32;
+        if (sy > -100 && sy < H + 100) pts.push({ sx, sy, r: n.nodeRadius });
       }
 
-      // Draw edges
       for (let i = 0; i < pts.length; i++) {
         for (let j = i + 1; j < pts.length; j++) {
-          const dx = pts[i].sx - pts[j].sx;
-          const dy = pts[i].sy - pts[j].sy;
+          const dx = pts[i].sx - pts[j].sx, dy = pts[i].sy - pts[j].sy;
           const d  = Math.sqrt(dx * dx + dy * dy);
           if (d < CONNECT_DIST) {
-            // Fade out edges near viewport edges for a natural bloom effect
-            const edgeFade = Math.min(
-              1,
-              Math.min(pts[i].sy, pts[j].sy) / 60,           // top fade
-              (H - Math.max(pts[i].sy, pts[j].sy)) / 60      // bottom fade
-            );
-            const alpha = (1 - d / CONNECT_DIST) * 0.16 * Math.max(0, edgeFade);
+            const fade  = Math.min(1, Math.min(pts[i].sy, pts[j].sy) / 60, (H - Math.max(pts[i].sy, pts[j].sy)) / 60);
+            const alpha = (1 - d / CONNECT_DIST) * 0.16 * Math.max(0, fade);
             ctx.beginPath();
             ctx.strokeStyle = `rgba(154,112,40,${alpha.toFixed(3)})`;
-            ctx.lineWidth   = 0.75;
+            ctx.lineWidth = 0.75;
             ctx.moveTo(pts[i].sx, pts[i].sy);
             ctx.lineTo(pts[j].sx, pts[j].sy);
             ctx.stroke();
           }
         }
       }
-
-      // Draw nodes
       for (const p of pts) {
         const fade = Math.min(1, p.sy / 40, (H - p.sy) / 40);
         ctx.beginPath();
         ctx.arc(p.sx, p.sy, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(154,112,40,${(0.36 * Math.max(0, fade)).toFixed(3)})`;
+        ctx.fillStyle = `rgba(154,112,40,${(0.38 * Math.max(0, fade)).toFixed(3)})`;
         ctx.fill();
       }
-
       requestAnimationFrame(draw);
     }
 
@@ -687,37 +865,29 @@
     resize();
     draw();
 
-    /* ── LOGO DROPDOWN ──────────────────────────────────── */
-    const logoBtn      = document.getElementById('logo-btn');
-    const logoDropdown = document.getElementById('logo-dropdown');
+    /* ── CONTACT NAV DROPDOWN ───────────────────────────── */
+    const contactBtn      = document.getElementById('contact-btn');
+    const contactDropdown = document.getElementById('contact-dropdown');
 
-    logoBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      const isOpen = logoDropdown.classList.toggle('open');
-      logoBtn.setAttribute('aria-expanded', isOpen);
+    contactBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = contactDropdown.classList.toggle('open');
+      contactBtn.setAttribute('aria-expanded', isOpen);
     });
-
-    // Close when clicking anywhere outside the dropdown
-    document.addEventListener('click', (e) => {
-      if (!logoBtn.contains(e.target) && !logoDropdown.contains(e.target)) {
-        logoDropdown.classList.remove('open');
-        logoBtn.setAttribute('aria-expanded', 'false');
-      }
+    document.addEventListener('click', () => {
+      contactDropdown.classList.remove('open');
+      contactBtn.setAttribute('aria-expanded', 'false');
     });
-
-    // Close on Escape key
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
-        logoDropdown.classList.remove('open');
-        logoBtn.setAttribute('aria-expanded', 'false');
+        contactDropdown.classList.remove('open');
+        contactBtn.setAttribute('aria-expanded', 'false');
       }
     });
 
     /* ── NAV SCROLL ─────────────────────────────────────── */
     const navbar = document.getElementById('navbar');
-    window.addEventListener('scroll', () => {
-      navbar.classList.toggle('scrolled', window.scrollY > 20);
-    });
+    window.addEventListener('scroll', () => navbar.classList.toggle('scrolled', window.scrollY > 20));
 
     /* ── SCROLL REVEAL ──────────────────────────────────── */
     const observer = new IntersectionObserver((entries) => {
