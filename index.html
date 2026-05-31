@@ -18,8 +18,48 @@
       --accent: #9A7028;
       --accent-pale: #F4EAD0;
       --border: #DDD0B5;
+      --nav-bg: rgba(246,241,231,0.84);
+      --logo-gold: #C49A3A;
       --serif: 'Instrument Serif', Georgia, serif;
       --sans: 'DM Sans', sans-serif;
+    }
+
+    /* Dark mode overrides — applied via data-theme="dark" on <html> */
+    [data-theme="dark"] {
+      --bg: #131109;
+      --ink: #EDE8DC;
+      --ink-light: #8A8070;
+      --accent: #D4AF60;
+      --accent-pale: #1D1A0F;
+      --border: #2A2518;
+      --nav-bg: rgba(19,17,9,0.90);
+      --logo-gold: #DFBE72;
+    }
+
+    /* Respect system preference when no manual choice is stored */
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]):not([data-theme="dark"]) {
+        --bg: #131109;
+        --ink: #EDE8DC;
+        --ink-light: #8A8070;
+        --accent: #D4AF60;
+        --accent-pale: #1D1A0F;
+        --border: #2A2518;
+        --nav-bg: rgba(19,17,9,0.90);
+        --logo-gold: #DFBE72;
+      }
+    }
+
+    /* Smooth theme swap — class added briefly during transition */
+    html.theme-transitioning,
+    html.theme-transitioning *,
+    html.theme-transitioning *::before,
+    html.theme-transitioning *::after {
+      transition:
+        background-color 0.4s ease,
+        border-color 0.4s ease,
+        color 0.3s ease,
+        box-shadow 0.4s ease !important;
     }
 
     html { scroll-behavior: smooth; }
@@ -52,7 +92,7 @@
       justify-content: space-between;
       align-items: center;
       padding: 1.4rem 4rem;
-      background: rgba(246,241,231,0.84);
+      background: var(--nav-bg);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid transparent;
       transition: border-color 0.3s;
@@ -105,7 +145,7 @@
       font-size: 0.85rem;
       font-weight: 400;
       line-height: 1;
-      color: #C49A3A;
+      color: var(--logo-gold);
       opacity: 0.92;
       pointer-events: none;
     }
@@ -275,7 +315,7 @@
     }
     .btn-primary { background: var(--ink); color: var(--bg); }
     .btn-primary:hover { background: var(--accent); transform: translateY(-2px); }
-    .btn-ghost { border: 1px solid var(--border); color: var(--ink); background: rgba(246,241,231,0.6); }
+    .btn-ghost { border: 1px solid var(--border); color: var(--ink); background: var(--accent-pale); }
     .btn-ghost:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
     .hero-scroll {
       position: absolute;
@@ -528,6 +568,27 @@
       footer { flex-direction: column; gap: 1.2rem; text-align: center; padding: 2rem 1.5rem; }
       .hero-scroll { display: none; }
     }
+    /* ── NEURON THEME TOGGLE — fixed bottom-right ───────────── */
+    .neuron-toggle {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--accent-pale);
+      cursor: pointer;
+      z-index: 200;
+      padding: 0;
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+      transition: border-color 0.3s, box-shadow 0.3s, bottom 0.35s cubic-bezier(0.4,0,0.2,1);
+    }
+    .neuron-toggle:hover {
+      border-color: var(--accent);
+      box-shadow: 0 6px 32px rgba(154,112,40,0.28);
+    }
+    .neuron-toggle canvas { display: block; }
   </style>
 </head>
 <body>
@@ -584,7 +645,14 @@
         </div>
       </li>
     </ul>
+
+    <!-- Light / dark toggle is the neuron button fixed at bottom-right -->
   </nav>
+
+  <!-- Neuron theme toggle — fixed bottom-right, always visible -->
+  <button class="neuron-toggle" id="theme-toggle" aria-label="Toggle dark mode">
+    <canvas id="neuron-canvas" width="52" height="52"></canvas>
+  </button>
 
   <!-- ── HERO ─────────────────────────────────────────────── -->
   <section class="hero" id="home">
@@ -778,6 +846,37 @@
   </footer>
 
   <script>
+    /* ── THEME ───────────────────────────────────────────────
+       Priority: localStorage > system preference
+       Stored as 'light' or 'dark' in localStorage key 'theme'
+    ─────────────────────────────────────────────────────────── */
+    const html = document.documentElement;
+
+    function isDark() {
+      return html.dataset.theme === 'dark';
+    }
+
+    function applyTheme(theme) {
+      html.classList.add('theme-transitioning');
+      html.dataset.theme = theme;
+      localStorage.setItem('theme', theme);
+      setTimeout(() => html.classList.remove('theme-transitioning'), 500);
+    }
+
+    // Init on page load — before paint to avoid flash
+    const stored = localStorage.getItem('theme');
+    const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    applyTheme(stored || (systemDark ? 'dark' : 'light'));
+
+    // Follow system changes only when user hasn't set a manual preference
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+      if (!localStorage.getItem('theme')) applyTheme(e.matches ? 'dark' : 'light');
+    });
+
+    document.getElementById('theme-toggle').addEventListener('click', () => {
+      applyTheme(isDark() ? 'light' : 'dark');
+    });
+
     /* ── NEURAL NETWORK ─────────────────────────────────────── */
     const canvas = document.getElementById('neural-canvas');
     const ctx    = canvas.getContext('2d');
@@ -841,8 +940,10 @@
           if (d < CONNECT_DIST) {
             const fade  = Math.min(1, Math.min(pts[i].sy, pts[j].sy) / 60, (H - Math.max(pts[i].sy, pts[j].sy)) / 60);
             const alpha = (1 - d / CONNECT_DIST) * 0.16 * Math.max(0, fade);
+            // Brighter gold in dark mode so lines stay visible against the dark bg
+      const [r,g,b] = isDark() ? [212,175,80] : [154,112,40];
             ctx.beginPath();
-            ctx.strokeStyle = `rgba(154,112,40,${alpha.toFixed(3)})`;
+            ctx.strokeStyle = `rgba(${r},${g},${b},${alpha.toFixed(3)})`;
             ctx.lineWidth = 0.75;
             ctx.moveTo(pts[i].sx, pts[i].sy);
             ctx.lineTo(pts[j].sx, pts[j].sy);
@@ -852,9 +953,10 @@
       }
       for (const p of pts) {
         const fade = Math.min(1, p.sy / 40, (H - p.sy) / 40);
+        const [r,g,b] = isDark() ? [212,175,80] : [154,112,40];
         ctx.beginPath();
         ctx.arc(p.sx, p.sy, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(154,112,40,${(0.38 * Math.max(0, fade)).toFixed(3)})`;
+        ctx.fillStyle = `rgba(${r},${g},${b},${(0.38 * Math.max(0, fade)).toFixed(3)})`;
         ctx.fill();
       }
       requestAnimationFrame(draw);
@@ -863,6 +965,119 @@
     window.addEventListener('resize', resize);
     resize();
     draw();
+
+    /* ── NEURON TOGGLE BUTTON ANIMATION ─────────────────────
+       A mini self-contained neural network lives inside the
+       theme toggle button. 7 nodes orbit the centre at varying
+       radii and speeds; lines are drawn between close pairs.
+       Colors shift with the theme in real-time.
+    ─────────────────────────────────────────────────────────── */
+    const nc   = document.getElementById('neuron-canvas');
+    const nctx = nc.getContext('2d');
+    const NW = 52, NH = 52, CX = NW / 2, CY = NH / 2;
+
+    const nNodes = [
+      { angle: 0.0,  radius: 16, speed:  0.0077 },
+      { angle: 1.1,  radius: 14, speed: -0.0060 },
+      { angle: 2.2,  radius: 18, speed:  0.0094 },
+      { angle: 3.3,  radius: 13, speed: -0.0068 },
+      { angle: 4.4,  radius: 16, speed:  0.0051 },
+      { angle: 5.5,  radius: 11, speed: -0.0111 },
+      { angle: 0.7,  radius: 15, speed:  0.0085 },
+    ];
+
+    function drawNeuron() {
+      nctx.clearRect(0, 0, NW, NH);
+      const [r, g, b] = isDark() ? [212, 175, 80] : [154, 112, 40];
+
+      // Compute current node positions
+      const pts = nNodes.map(n => ({
+        x: CX + Math.cos(n.angle) * n.radius,
+        y: CY + Math.sin(n.angle) * n.radius,
+      }));
+
+      // Draw edges between nearby nodes
+      for (let i = 0; i < pts.length; i++) {
+        for (let j = i + 1; j < pts.length; j++) {
+          const dx = pts[i].x - pts[j].x;
+          const dy = pts[i].y - pts[j].y;
+          const d  = Math.sqrt(dx * dx + dy * dy);
+          if (d < 24) {
+            nctx.beginPath();
+            nctx.strokeStyle = `rgba(${r},${g},${b},${((1 - d / 24) * 0.65).toFixed(2)})`;
+            nctx.lineWidth = 0.9;
+            nctx.moveTo(pts[i].x, pts[i].y);
+            nctx.lineTo(pts[j].x, pts[j].y);
+            nctx.stroke();
+          }
+        }
+      }
+
+      // Draw orbit nodes
+      for (const p of pts) {
+        nctx.beginPath();
+        nctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+        nctx.fillStyle = `rgba(${r},${g},${b},0.8)`;
+        nctx.fill();
+      }
+
+      // Centre node — always present, slightly larger
+      nctx.beginPath();
+      nctx.arc(CX, CY, 2.8, 0, Math.PI * 2);
+      nctx.fillStyle = `rgba(${r},${g},${b},1)`;
+      nctx.fill();
+
+      // Advance angles
+      nNodes.forEach(n => { n.angle += n.speed; });
+      requestAnimationFrame(drawNeuron);
+    }
+    drawNeuron();
+
+    /* ── TOGGLE POSITION AWARENESS ──────────────────────────
+       Watches .hero-scroll and .footer-copy. When either
+       enters the toggle's fixed bottom-right zone, the toggle
+       smoothly floats up to clear them.
+    ─────────────────────────────────────────────────────────── */
+    const toggle      = document.getElementById('theme-toggle');
+    const TOGGLE_W    = 52, TOGGLE_H = 52;
+    const DEFAULT_BTM = 32; // 2rem in px
+    const DEFAULT_R   = 32; // 2rem in px
+    const CLEAR_PAD   = 14; // breathing gap above the element
+
+    function updateTogglePos() {
+      const vW = window.innerWidth, vH = window.innerHeight;
+
+      // Toggle's current bounding box (assuming default bottom)
+      const tLeft  = vW  - DEFAULT_R  - TOGGLE_W;
+      const tRight = vW  - DEFAULT_R;
+      const tTop   = vH  - DEFAULT_BTM - TOGGLE_H;
+      const tBot   = vH  - DEFAULT_BTM;
+
+      let newBottom = DEFAULT_BTM;
+
+      ['.hero-scroll', '.footer-copy'].forEach(sel => {
+        const el = document.querySelector(sel);
+        if (!el) return;
+        const r = el.getBoundingClientRect();
+
+        // Check if element horizontally overlaps the toggle zone
+        const hOverlap = r.right > tLeft - 10 && r.left < tRight + 10;
+        // Check if element is within or near the toggle zone vertically
+        const vOverlap = r.bottom > tTop - 10 && r.top < tBot + 10;
+
+        if (hOverlap && vOverlap) {
+          // Push toggle up so its bottom sits above the element's top
+          const needed = (vH - r.top) + CLEAR_PAD;
+          newBottom = Math.max(newBottom, needed);
+        }
+      });
+
+      toggle.style.bottom = newBottom + 'px';
+    }
+
+    window.addEventListener('scroll', updateTogglePos, { passive: true });
+    window.addEventListener('resize', updateTogglePos);
+    updateTogglePos();
 
     /* ── CONTACT NAV DROPDOWN ───────────────────────────── */
     const contactBtn      = document.getElementById('contact-btn');
