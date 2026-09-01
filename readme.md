@@ -17,12 +17,12 @@ B.Tech CSE (AI & ML) @ Lovely Professional University. I build at the edge of cu
 ### ↳ Stack
 
 - **Vite + React** (TypeScript)
-- **CircularGallery** from [React Bits](https://reactbits.dev/components/circular-gallery) + `ogl`
 - Centered **glass pill nav** (About · Skills · Projects · Certificates · Contact)
 - Theme-aware **U** mark + favicon (`data-theme`, `localStorage`, `prefers-color-scheme`)
+- **Skills** as a snapped horizontal card strip (CSS scroll, no WebGL)
 - **Certificates** section (text cards)
 - **Text-only projects** for now — demos later
-- Improved **neural canvas** (visible gold net, paused when the tab is hidden)
+- Quiet **neural canvas** (off under 768px)
 - **Vercel** from default branch **`Main`**
 
 Vanilla snapshot (pre-React): branch `backup/vanilla-v1.2`.
@@ -50,4 +50,4 @@ npm run build
 
 ---
 
-*© 2026 Utkarsh Kumar · v1.3.0*
+*© 2026 Utkarsh Kumar · v1.3.1*

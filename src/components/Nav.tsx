@@ -6,7 +6,7 @@ import { Logo } from './Logo';
 export function Nav() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [contactOpen, setContactOpen] = useState(false);
-  const isMobile = useMediaQuery('(max-width: 768px)');
+  const isMobile = useMediaQuery('(max-width: 900px)');
   const wrapperRef = useRef<HTMLDivElement>(null);
   const contactBtnRef = useRef<HTMLButtonElement>(null);
   const menuId = useId();

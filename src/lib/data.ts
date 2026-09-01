@@ -11,7 +11,7 @@ export const PROFILE = {
   linkedinHandle: 'utkarsh777wins',
   linkedinCerts: 'https://www.linkedin.com/in/utkarsh777wins/details/certifications/',
   live: 'https://portfolio-me-one-zeta.vercel.app',
-  version: '1.3.0',
+  version: '1.3.1',
   cgpa: '8.44',
   school: 'Lovely Professional University',
   degree: 'B.Tech CSE (AI & ML)',
@@ -26,18 +26,18 @@ export const NAV_LINKS = [
 
 export const SKILLS = [
   { name: 'Python', tag: 'Language' },
-  { name: 'C++', tag: 'Systems' },
-  { name: 'C', tag: 'Systems' },
-  { name: 'JavaScript', tag: 'Web' },
-  { name: 'Java', tag: 'OOP' },
+  { name: 'C++', tag: 'Language' },
+  { name: 'C', tag: 'Language' },
+  { name: 'JavaScript', tag: 'Language' },
+  { name: 'Java', tag: 'Language' },
   { name: 'HTML/CSS', tag: 'Web' },
-  { name: 'React', tag: 'Frontend' },
-  { name: 'Flutter/Dart', tag: 'Mobile' },
-  { name: 'PostgreSQL', tag: 'Database' },
-  { name: 'MongoDB', tag: 'Database' },
-  { name: 'Firebase', tag: 'Cloud' },
-  { name: 'ESP32', tag: 'Embedded' },
-  { name: 'Flask', tag: 'Backend' },
+  { name: 'React', tag: 'Web' },
+  { name: 'Flutter/Dart', tag: 'Web' },
+  { name: 'PostgreSQL', tag: 'Data' },
+  { name: 'MongoDB', tag: 'Data' },
+  { name: 'Firebase', tag: 'Data' },
+  { name: 'ESP32', tag: 'Hardware' },
+  { name: 'Flask', tag: 'Web' },
 ] as const;
 
 export type Skill = (typeof SKILLS)[number];
