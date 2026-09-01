@@ -11,7 +11,7 @@ export const PROFILE = {
   linkedinHandle: 'utkarsh777wins',
   linkedinCerts: 'https://www.linkedin.com/in/utkarsh777wins/details/certifications/',
   live: 'https://portfolio-me-one-zeta.vercel.app',
-  version: '1.3.2',
+  version: '1.3.3',
   cgpa: '8.44',
   school: 'Lovely Professional University',
   degree: 'B.Tech CSE (AI & ML)',

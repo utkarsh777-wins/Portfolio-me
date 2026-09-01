@@ -575,10 +575,15 @@ section {
   scroll-snap-type: x mandatory;
   scroll-padding-inline: 0;
   overscroll-behavior-x: contain;
+  overflow-anchor: none;
   touch-action: pan-x;
-  padding: 1rem 2.2rem 1rem 0.2rem;
+  padding: 1rem 2.2rem 1rem 0;
   scrollbar-width: none;
   -ms-overflow-style: none;
+}
+
+.skills-strip.is-autoplaying {
+  scroll-snap-type: none;
 }
 
 .skills-strip::-webkit-scrollbar {
@@ -680,9 +685,11 @@ section {
   overflow: hidden;
   background: color-mix(in srgb, var(--bg) 76%, transparent);
   transition: border-color 0.25s;
+  cursor: pointer;
 }
 
-.project-card::before {
+.project-card::before,
+.cert-card::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -693,15 +700,18 @@ section {
   z-index: 0;
 }
 
-.project-card:hover {
+.project-card:hover,
+.cert-card:hover {
   border-color: var(--accent);
 }
 
-.project-card:hover::before {
+.project-card:hover::before,
+.cert-card:hover::before {
   transform: scaleX(1);
 }
 
-.project-card > * {
+.project-card > *,
+.cert-card > * {
   position: relative;
   z-index: 1;
 }
@@ -1088,8 +1098,8 @@ footer {
     left: 0.85rem;
   }
   .brand-mark svg {
-    width: 30px;
-    height: 30px;
+    height: 32px;
+    width: auto;
   }
   .nav-wrap {
     top: 0.75rem;

@@ -1,20 +1,42 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useMediaQuery } from '../hooks/useMediaQuery';
 import { SKILLS } from '../lib/data';
 import { Reveal } from './Reveal';
 import { SkillIcon } from './SkillIcon';
+
+const AUTO_PX_PER_SEC = 28;
+const RESUME_MS = 3000;
 
 export function Skills() {
   const scrollerRef = useRef<HTMLDivElement>(null);
   const [progress, setProgress] = useState(0);
   const [active, setActive] = useState(0);
+  const isMobile = useMediaQuery('(max-width: 768px)');
+  const items = useMemo(() => (isMobile ? [...SKILLS] : [...SKILLS, ...SKILLS]), [isMobile]);
 
   useEffect(() => {
     const el = scrollerRef.current;
     if (!el) return;
 
-    const update = () => {
-      const max = el.scrollWidth - el.clientWidth;
-      setProgress(max <= 0 ? 1 : el.scrollLeft / max);
+    el.scrollLeft = 0;
+    const zero = () => {
+      el.scrollLeft = 0;
+    };
+    requestAnimationFrame(zero);
+    const zeroTimer = window.setTimeout(zero, 50);
+
+    let paused = isMobile;
+    let resumeAt = 0;
+    let lastTs = 0;
+    let raf = 0;
+
+    const loopWidth = () => (isMobile ? el.scrollWidth : el.scrollWidth / 2);
+
+    const updateActive = () => {
+      const half = loopWidth();
+      const max = Math.max(1, half - el.clientWidth);
+      const pos = isMobile ? el.scrollLeft : el.scrollLeft % half;
+      setProgress(Math.min(1, pos / max));
 
       const row = el.getBoundingClientRect();
       const focusX = row.left + row.width * 0.38;
@@ -29,25 +51,65 @@ export function Skills() {
           best = index;
         }
       });
-      setActive(best);
+      setActive(best % SKILLS.length);
+    };
+
+    const onUser = () => {
+      if (isMobile) return;
+      paused = true;
+      resumeAt = performance.now() + RESUME_MS;
+      el.classList.remove('is-autoplaying');
     };
 
     const onWheel = (event: WheelEvent) => {
+      onUser();
       if (!event.shiftKey) return;
       event.preventDefault();
       el.scrollLeft += event.deltaY;
     };
 
-    update();
-    el.addEventListener('scroll', update, { passive: true });
-    el.addEventListener('wheel', onWheel, { passive: false });
-    window.addEventListener('resize', update);
-    return () => {
-      el.removeEventListener('scroll', update);
-      el.removeEventListener('wheel', onWheel);
-      window.removeEventListener('resize', update);
+    const tick = (ts: number) => {
+      raf = requestAnimationFrame(tick);
+      if (!lastTs) lastTs = ts;
+      const dt = Math.min(0.05, (ts - lastTs) / 1000);
+      lastTs = ts;
+
+      if (!isMobile && paused && ts >= resumeAt) {
+        paused = false;
+        el.classList.add('is-autoplaying');
+      }
+
+      if (!isMobile && !paused) {
+        el.scrollLeft += AUTO_PX_PER_SEC * dt;
+        const half = loopWidth();
+        if (half > 0 && el.scrollLeft >= half) {
+          el.scrollLeft -= half;
+        }
+      }
+      updateActive();
     };
-  }, []);
+
+    updateActive();
+    if (!isMobile) {
+      el.classList.add('is-autoplaying');
+      raf = requestAnimationFrame(tick);
+    }
+
+    el.addEventListener('scroll', updateActive, { passive: true });
+    el.addEventListener('wheel', onWheel, { passive: false });
+    el.addEventListener('pointerdown', onUser);
+    el.addEventListener('touchstart', onUser, { passive: true });
+    window.addEventListener('resize', updateActive);
+    return () => {
+      window.clearTimeout(zeroTimer);
+      cancelAnimationFrame(raf);
+      el.removeEventListener('scroll', updateActive);
+      el.removeEventListener('wheel', onWheel);
+      el.removeEventListener('pointerdown', onUser);
+      el.removeEventListener('touchstart', onUser);
+      window.removeEventListener('resize', updateActive);
+    };
+  }, [isMobile]);
 
   return (
     <section id="skills">
@@ -64,10 +126,10 @@ export function Skills() {
         role="region"
         aria-label="Skills. Scroll horizontally to browse."
       >
-        {SKILLS.map((skill, index) => (
+        {items.map((skill, index) => (
           <article
-            className={`skill-card${index === active ? ' is-active' : ''}`}
-            key={skill.name}
+            className={`skill-card${index % SKILLS.length === active ? ' is-active' : ''}`}
+            key={`${skill.name}-${index}`}
           >
             <div className="skill-icon">
               <SkillIcon name={skill.name} />

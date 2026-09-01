@@ -5,41 +5,27 @@ type LogoProps = {
   title?: string;
 };
 
-export function Logo({ size = 32, title = 'Utkarsh Kumar' }: LogoProps) {
+export function Logo({ size = 36, title = 'Utkarsh Kumar' }: LogoProps) {
   const { theme } = useTheme();
-  const isDark = theme === 'dark';
+  const gold = theme === 'dark' ? '#D4AF60' : '#9A7028';
 
   return (
     <svg
-      viewBox="0 0 32 32"
-      width={size}
+      viewBox="0 0 22 32"
+      width={Math.round(size * 0.7)}
       height={size}
       role="img"
       aria-label={title}
       className="site-logo"
     >
-      <rect width="32" height="32" rx="6" fill={isDark ? '#131109' : '#F6F1E7'} />
-      <rect
-        x="0.5"
-        y="0.5"
-        width="31"
-        height="31"
-        rx="5.5"
-        fill="none"
-        stroke={isDark ? '#2A2518' : '#DDD0B5'}
-        strokeWidth="1"
-      />
       <text
-        x="16"
-        y="24.2"
+        x="11"
+        y="26"
         textAnchor="middle"
         fontFamily="Instrument Serif, Georgia, serif"
         fontStyle="italic"
-        fontSize="22"
-        fill={isDark ? '#D4AF60' : 'none'}
-        stroke={isDark ? 'none' : '#9A7028'}
-        strokeWidth={isDark ? 0 : 1.4}
-        strokeLinejoin="round"
+        fontSize="28"
+        fill={gold}
       >
         U
       </text>
