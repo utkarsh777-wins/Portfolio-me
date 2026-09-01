@@ -1,4 +1,5 @@
 import { About } from './components/About';
+import { BrandMark } from './components/BrandMark';
 import { Certificates } from './components/Certificates';
 import { Contact } from './components/Contact';
 import { Footer } from './components/Footer';
@@ -16,6 +17,7 @@ export default function App() {
         Skip to content
       </a>
       <NeuralCanvas />
+      <BrandMark />
       <Nav />
       <ThemeToggle />
       <main id="main">

@@ -6,27 +6,46 @@ import { SkillIcon } from './SkillIcon';
 export function Skills() {
   const scrollerRef = useRef<HTMLDivElement>(null);
   const [progress, setProgress] = useState(0);
+  const [active, setActive] = useState(0);
 
   useEffect(() => {
     const el = scrollerRef.current;
     if (!el) return;
 
-    const onScroll = () => {
+    const update = () => {
       const max = el.scrollWidth - el.clientWidth;
       setProgress(max <= 0 ? 1 : el.scrollLeft / max);
+
+      const row = el.getBoundingClientRect();
+      const focusX = row.left + row.width * 0.38;
+      const cards = Array.from(el.querySelectorAll<HTMLElement>('.skill-card'));
+      let best = 0;
+      let bestDist = Infinity;
+      cards.forEach((card, index) => {
+        const box = card.getBoundingClientRect();
+        const dist = Math.abs(box.left + box.width / 2 - focusX);
+        if (dist < bestDist) {
+          bestDist = dist;
+          best = index;
+        }
+      });
+      setActive(best);
     };
+
     const onWheel = (event: WheelEvent) => {
       if (!event.shiftKey) return;
       event.preventDefault();
       el.scrollLeft += event.deltaY;
     };
 
-    onScroll();
-    el.addEventListener('scroll', onScroll, { passive: true });
+    update();
+    el.addEventListener('scroll', update, { passive: true });
     el.addEventListener('wheel', onWheel, { passive: false });
+    window.addEventListener('resize', update);
     return () => {
-      el.removeEventListener('scroll', onScroll);
+      el.removeEventListener('scroll', update);
       el.removeEventListener('wheel', onWheel);
+      window.removeEventListener('resize', update);
     };
   }, []);
 
@@ -45,8 +64,11 @@ export function Skills() {
         role="region"
         aria-label="Skills. Scroll horizontally to browse."
       >
-        {SKILLS.map((skill) => (
-          <article className="skill-card" key={skill.name}>
+        {SKILLS.map((skill, index) => (
+          <article
+            className={`skill-card${index === active ? ' is-active' : ''}`}
+            key={skill.name}
+          >
             <div className="skill-icon">
               <SkillIcon name={skill.name} />
             </div>

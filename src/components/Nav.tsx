@@ -1,7 +1,6 @@
 import { useEffect, useId, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type RefObject } from 'react';
 import { HAS_RESUME, NAV_LINKS, PROFILE } from '../lib/data';
 import { useMediaQuery } from '../hooks/useMediaQuery';
-import { Logo } from './Logo';
 
 export function Nav() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -46,11 +45,6 @@ export function Nav() {
   return (
     <header className="nav-wrap" ref={wrapperRef}>
       <nav className="nav-pill" aria-label="Primary">
-        <a href="#home" className="nav-logo" onClick={closeAll}>
-          <Logo size={28} />
-          <span className="sr-only">{PROFILE.name}</span>
-        </a>
-
         {!isMobile && (
           <ul className="nav-links">
             {NAV_LINKS.map((link) => (
