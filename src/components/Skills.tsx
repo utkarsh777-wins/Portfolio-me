@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 import { SKILLS } from '../lib/data';
 import { Reveal } from './Reveal';
@@ -12,46 +12,59 @@ export function Skills() {
   const [progress, setProgress] = useState(0);
   const [active, setActive] = useState(0);
   const isMobile = useMediaQuery('(max-width: 768px)');
-  const items = useMemo(() => (isMobile ? [...SKILLS] : [...SKILLS, ...SKILLS]), [isMobile]);
 
   useEffect(() => {
     const el = scrollerRef.current;
     if (!el) return;
 
-    el.scrollLeft = 0;
-    const zero = () => {
+    const maxScroll = () => Math.max(0, el.scrollWidth - el.clientWidth);
+
+    const pinStart = () => {
       el.scrollLeft = 0;
     };
-    requestAnimationFrame(zero);
-    const zeroTimer = window.setTimeout(zero, 50);
+    pinStart();
+    const rafZero = requestAnimationFrame(pinStart);
+    const tZero = window.setTimeout(pinStart, 0);
+
+    const logMetrics = () => {
+      const first = el.querySelector<HTMLElement>('.skill-card');
+      const strip = el.getBoundingClientRect();
+      const card = first?.getBoundingClientRect();
+      const maxScrollLeft = el.scrollWidth - el.clientWidth;
+      const firstCardX = card ? card.left - strip.left + el.scrollLeft : -1;
+      // Expected: firstCardX === 0, maxScrollLeft > 0, cardCount === SKILLS.length
+      console.info('[skills-track]', {
+        cardCount: el.querySelectorAll('.skill-card').length,
+        scrollWidth: el.scrollWidth,
+        clientWidth: el.clientWidth,
+        maxScrollLeft,
+        firstCardX,
+        scrollLeft: el.scrollLeft,
+      });
+    };
+    const tLog = window.setTimeout(logMetrics, 80);
 
     let paused = isMobile;
     let resumeAt = 0;
     let lastTs = 0;
     let raf = 0;
 
-    const loopWidth = () => (isMobile ? el.scrollWidth : el.scrollWidth / 2);
-
     const updateActive = () => {
-      const half = loopWidth();
-      const max = Math.max(1, half - el.clientWidth);
-      const pos = isMobile ? el.scrollLeft : el.scrollLeft % half;
-      setProgress(Math.min(1, pos / max));
+      const max = maxScroll();
+      setProgress(max <= 0 ? 1 : el.scrollLeft / max);
 
-      const row = el.getBoundingClientRect();
-      const focusX = row.left + row.width * 0.38;
+      const rowLeft = el.getBoundingClientRect().left;
       const cards = Array.from(el.querySelectorAll<HTMLElement>('.skill-card'));
       let best = 0;
       let bestDist = Infinity;
       cards.forEach((card, index) => {
-        const box = card.getBoundingClientRect();
-        const dist = Math.abs(box.left + box.width / 2 - focusX);
+        const dist = Math.abs(card.getBoundingClientRect().left - rowLeft);
         if (dist < bestDist) {
           bestDist = dist;
           best = index;
         }
       });
-      setActive(best % SKILLS.length);
+      setActive(best);
     };
 
     const onUser = () => {
@@ -80,10 +93,10 @@ export function Skills() {
       }
 
       if (!isMobile && !paused) {
-        el.scrollLeft += AUTO_PX_PER_SEC * dt;
-        const half = loopWidth();
-        if (half > 0 && el.scrollLeft >= half) {
-          el.scrollLeft -= half;
+        const max = maxScroll();
+        if (max > 0) {
+          const next = el.scrollLeft + AUTO_PX_PER_SEC * dt;
+          el.scrollLeft = next >= max ? 0 : next;
         }
       }
       updateActive();
@@ -101,7 +114,9 @@ export function Skills() {
     el.addEventListener('touchstart', onUser, { passive: true });
     window.addEventListener('resize', updateActive);
     return () => {
-      window.clearTimeout(zeroTimer);
+      cancelAnimationFrame(rafZero);
+      window.clearTimeout(tZero);
+      window.clearTimeout(tLog);
       cancelAnimationFrame(raf);
       el.removeEventListener('scroll', updateActive);
       el.removeEventListener('wheel', onWheel);
@@ -126,10 +141,10 @@ export function Skills() {
         role="region"
         aria-label="Skills. Scroll horizontally to browse."
       >
-        {items.map((skill, index) => (
+        {SKILLS.map((skill, index) => (
           <article
-            className={`skill-card${index % SKILLS.length === active ? ' is-active' : ''}`}
-            key={`${skill.name}-${index}`}
+            className={`skill-card${index === active ? ' is-active' : ''}`}
+            key={skill.name}
           >
             <div className="skill-icon">
               <SkillIcon name={skill.name} />
