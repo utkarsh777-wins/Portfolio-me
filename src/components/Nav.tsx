@@ -5,7 +5,7 @@ import { useMediaQuery } from '../hooks/useMediaQuery';
 export function Nav() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [contactOpen, setContactOpen] = useState(false);
-  const isMobile = useMediaQuery('(max-width: 900px)');
+  const isMobile = useMediaQuery('(max-width: 768px)');
   const wrapperRef = useRef<HTMLDivElement>(null);
   const contactBtnRef = useRef<HTMLButtonElement>(null);
   const menuId = useId();
@@ -34,7 +34,10 @@ export function Nav() {
   }, []);
 
   useEffect(() => {
-    if (!isMobile) setMenuOpen(false);
+    if (!isMobile) {
+      setMenuOpen(false);
+      setContactOpen(false);
+    }
   }, [isMobile]);
 
   const closeAll = () => {
@@ -43,64 +46,103 @@ export function Nav() {
   };
 
   return (
-    <header className="nav-wrap" ref={wrapperRef}>
-      <nav className="nav-pill" aria-label="Primary">
-        {!isMobile && (
-          <ul className="nav-links">
-            {NAV_LINKS.map((link) => (
-              <li key={link.href}>
-                <a href={link.href}>{link.label}</a>
-              </li>
-            ))}
-            <li>
-              <ContactMenu
-                open={contactOpen}
-                setOpen={setContactOpen}
-                hasResume={HAS_RESUME}
-                menuId={contactId}
-                buttonRef={contactBtnRef}
-              />
-            </li>
-          </ul>
-        )}
-
-        {isMobile && (
-          <button
-            className="nav-burger"
-            type="button"
-            aria-expanded={menuOpen}
-            aria-controls={menuId}
-            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-            onClick={() => {
-              setContactOpen(false);
-              setMenuOpen((v) => !v);
-            }}
-          >
-            <span />
-            <span />
-            <span />
-          </button>
-        )}
-      </nav>
-
+    <>
       {isMobile && menuOpen && (
-        <div className="nav-mobile-panel" id={menuId}>
-          {NAV_LINKS.map((link) => (
-            <a key={link.href} href={link.href} onClick={closeAll}>
-              {link.label}
-            </a>
-          ))}
-          <ContactMenu
-            open={contactOpen}
-            setOpen={setContactOpen}
-            hasResume={HAS_RESUME}
-            menuId={`${contactId}-m`}
-            buttonRef={contactBtnRef}
-            align="left"
-          />
-        </div>
+        <button
+          className="nav-backdrop"
+          type="button"
+          aria-label="Close menu"
+          onClick={closeAll}
+        />
       )}
-    </header>
+      <header className={`nav-wrap${isMobile ? ' is-mobile' : ''}`} ref={wrapperRef}>
+        <nav className="nav-pill" aria-label="Primary">
+          {!isMobile && (
+            <ul className="nav-links">
+              {NAV_LINKS.map((link) => (
+                <li key={link.href}>
+                  <a href={link.href}>{link.label}</a>
+                </li>
+              ))}
+              <li>
+                <ContactMenu
+                  open={contactOpen}
+                  setOpen={setContactOpen}
+                  hasResume={HAS_RESUME}
+                  menuId={contactId}
+                  buttonRef={contactBtnRef}
+                />
+              </li>
+            </ul>
+          )}
+
+          {isMobile && (
+            <button
+              className={`nav-burger${menuOpen ? ' is-open' : ''}`}
+              type="button"
+              aria-expanded={menuOpen}
+              aria-controls={menuId}
+              aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+              onClick={() => {
+                setContactOpen(false);
+                setMenuOpen((v) => !v);
+              }}
+            >
+              <span />
+              <span />
+            </button>
+          )}
+        </nav>
+
+        {isMobile && menuOpen && (
+          <div className="nav-sheet" id={menuId}>
+            {NAV_LINKS.map((link) => (
+              <a key={link.href} className="nav-sheet-item" href={link.href} onClick={closeAll}>
+                {link.label}
+              </a>
+            ))}
+            <button
+              className="nav-sheet-item"
+              type="button"
+              aria-expanded={contactOpen}
+              onClick={() => setContactOpen((v) => !v)}
+            >
+              Contact
+            </button>
+            {contactOpen && (
+              <>
+                <a className="nav-sheet-item is-nested" href={`mailto:${PROFILE.email}`} onClick={closeAll}>
+                  Email
+                </a>
+                <a
+                  className="nav-sheet-item is-nested"
+                  href={PROFILE.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={closeAll}
+                >
+                  LinkedIn
+                </a>
+                <a
+                  className="nav-sheet-item is-nested"
+                  href={PROFILE.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={closeAll}
+                >
+                  GitHub
+                </a>
+                {HAS_RESUME && (
+                  <a className="nav-sheet-item is-nested" href="/resume.pdf" onClick={closeAll}>
+                    Resume PDF
+                  </a>
+                )}
+              </>
+            )}
+          </div>
+        )}
+      </header>
+    </>
   );
 }
 
@@ -110,14 +152,12 @@ function ContactMenu({
   hasResume,
   menuId,
   buttonRef,
-  align = 'right',
 }: {
   open: boolean;
   setOpen: (value: boolean | ((prev: boolean) => boolean)) => void;
   hasResume: boolean;
   menuId: string;
   buttonRef: RefObject<HTMLButtonElement | null>;
-  align?: 'left' | 'right';
 }) {
   const firstLinkRef = useRef<HTMLAnchorElement>(null);
 
@@ -134,7 +174,7 @@ function ContactMenu({
   };
 
   return (
-    <div className={`contact-nav-wrapper ${align}`}>
+    <div className="contact-nav-wrapper">
       <button
         ref={buttonRef}
         className="contact-nav-btn"

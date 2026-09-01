@@ -50,4 +50,4 @@ npm run build
 
 ---
 
-*© 2026 Utkarsh Kumar · v1.3.3*
+*© 2026 Utkarsh Kumar · v1.3.4*

@@ -119,11 +119,13 @@ footer {
 /* ── BRAND + NAV ─────────────────────────────────────── */
 .brand-mark {
   position: fixed;
-  top: 1.1rem;
-  left: 1.25rem;
+  top: 1.05rem;
+  left: 1.35rem;
   z-index: 110;
+  height: 44px;
+  display: flex;
+  align-items: center;
   line-height: 0;
-  display: block;
 }
 
 .brand-mark svg {
@@ -132,23 +134,23 @@ footer {
 
 .nav-wrap {
   position: fixed;
-  top: 1.1rem;
+  top: 1.05rem;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 100;
+  z-index: 101;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.55rem;
   width: max-content;
-  max-width: calc(100vw - 7.5rem);
+  max-width: calc(100vw - 8.5rem);
 }
 
 .nav-pill {
   display: flex;
   align-items: center;
+  min-height: 44px;
   gap: 1.15rem;
-  padding: 0.55rem 1.2rem;
+  padding: 0 1.25rem;
   border-radius: 999px;
   background: color-mix(in srgb, var(--bg) 60%, transparent);
   backdrop-filter: blur(16px) saturate(1.2);
@@ -192,50 +194,102 @@ footer {
 
 .nav-burger {
   display: none;
-  width: 40px;
-  height: 40px;
+  position: relative;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
   border: 0;
   background: none;
-  flex-direction: column;
-  justify-content: center;
-  gap: 5px;
-  padding: 10px;
+  padding: 0;
   cursor: pointer;
+  border-radius: 50%;
 }
 
 .nav-burger span {
-  display: block;
-  height: 1.5px;
+  position: absolute;
+  left: 13px;
   width: 18px;
+  height: 1.7px;
   background: var(--ink);
   border-radius: 2px;
+  transition: transform 0.2s ease, top 0.2s ease;
 }
 
-.nav-mobile-panel {
-  width: min(92vw, 360px);
+.nav-burger span:first-child {
+  top: 17px;
+}
+
+.nav-burger span:last-child {
+  top: 25px;
+}
+
+.nav-burger.is-open span:first-child {
+  top: 21px;
+  transform: rotate(45deg);
+}
+
+.nav-burger.is-open span:last-child {
+  top: 21px;
+  transform: rotate(-45deg);
+}
+
+.nav-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 99;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  background: color-mix(in srgb, var(--bg) 42%, transparent);
+}
+
+.nav-sheet {
+  position: fixed;
+  top: calc(0.7rem + 44px + 0.45rem);
+  left: 1.25rem;
+  right: 1.25rem;
+  z-index: 120;
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
-  padding: 0.85rem 1rem 1rem;
-  border-radius: 22px;
-  background: color-mix(in srgb, var(--bg) 62%, transparent);
+  gap: 0;
+  padding: 0.2rem 0.2rem;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--bg) 94%, transparent);
   backdrop-filter: blur(16px) saturate(1.2);
   -webkit-backdrop-filter: blur(16px) saturate(1.2);
-  border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--border));
-  box-shadow: 0 12px 36px color-mix(in srgb, var(--ink) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 32%, var(--border));
+  box-shadow: 0 10px 28px color-mix(in srgb, var(--ink) 8%, transparent);
 }
 
-.nav-mobile-panel > a {
-  font-size: 0.82rem;
+.nav-sheet-item {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  width: 100%;
+  padding: 0 0.9rem;
+  border: 0;
+  background: none;
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  font-weight: 400;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--ink-light);
   text-decoration: none;
-  padding: 0.55rem 0.2rem;
+  text-align: left;
+  color: var(--ink-light);
+  cursor: pointer;
+  border-radius: 8px;
 }
 
-.nav-mobile-panel > a:hover {
+.nav-sheet-item:hover,
+.nav-sheet-item:focus-visible {
   color: var(--accent);
+  outline: none;
+}
+
+.nav-sheet-item.is-nested {
+  padding-left: 1.85rem;
 }
 
 .contact-nav-wrapper {
@@ -1067,21 +1121,6 @@ footer {
 }
 
 @media (max-width: 900px) {
-  .nav-wrap {
-    width: auto;
-    max-width: none;
-  }
-  .nav-pill {
-    width: auto;
-    padding: 0.28rem;
-    gap: 0;
-  }
-  .nav-links {
-    display: none;
-  }
-  .nav-burger {
-    display: flex;
-  }
   .contact-section {
     grid-template-columns: 1fr;
     gap: 3rem;
@@ -1094,15 +1133,37 @@ footer {
 
 @media (max-width: 768px) {
   .brand-mark {
-    top: 0.85rem;
+    top: 0.7rem;
     left: 0.85rem;
+    height: 44px;
   }
   .brand-mark svg {
-    height: 32px;
+    height: 26px;
     width: auto;
   }
-  .nav-wrap {
-    top: 0.75rem;
+  .nav-wrap,
+  .nav-wrap.is-mobile {
+    top: 0.7rem;
+    left: auto;
+    right: 0.85rem;
+    transform: none;
+    width: auto;
+    max-width: none;
+    align-items: flex-end;
+  }
+  .nav-pill {
+    width: 44px;
+    min-height: 44px;
+    height: 44px;
+    padding: 0;
+    gap: 0;
+    justify-content: center;
+  }
+  .nav-links {
+    display: none;
+  }
+  .nav-burger {
+    display: block;
   }
   .hero {
     padding: 5.5rem 1.25rem 3.5rem;
